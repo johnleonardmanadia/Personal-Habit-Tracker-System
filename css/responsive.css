@@ -1,0 +1,37 @@
+/* Topbar + backdrop exist only on phones */
+.topbar, .nav-backdrop { display: none; }
+
+/* Tablet: compact icon rail */
+@media (max-width: 900px) {
+  :root { --sidebar-w: 72px; }
+  .brand { font-size: 0; margin-bottom: var(--space-3); }
+  .brand::before { content: "FT"; font-size: 1rem; }
+  .nav-list a { flex-direction: column; gap: .15rem; justify-content: center; padding: .6rem .3rem; font-size: .68rem; text-align: center; }
+  .nav-list a i { font-size: 1.1rem; }
+  .nav-list a span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+}
+
+/* Phone: hamburger + slide-in drawer */
+@media (max-width: 600px) {
+  .app-shell { grid-template-columns: 1fr; }
+  .topbar { display: flex; align-items: center; gap: .75rem; position: sticky; top: 0; z-index: 30; height: 56px; padding: 0 var(--space-3);
+    background: var(--surface); border-bottom: 1px solid var(--border); }
+  .topbar-title { font-weight: 700; color: var(--accent-strong); }
+  .menu-btn { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; font-size: 1.2rem;
+    background: transparent; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; margin-left: -4px; }
+  .menu-btn:hover { background: var(--surface-2); }
+  .sidebar { position: fixed; top: 0; bottom: 0; left: 0; height: 100%; width: min(280px, 82vw); z-index: 60; padding: var(--space-3);
+    border-right: 1px solid var(--border); transform: translateX(-105%); visibility: hidden; transition: transform .2s ease, visibility 0s linear .2s; }
+  body.nav-open .sidebar { transform: none; visibility: visible; transition: transform .2s ease; }
+  .brand { font-size: 1.1rem; margin-bottom: var(--space-3); }
+  .brand::before { content: none; }
+  .nav-list a { flex-direction: row; justify-content: flex-start; gap: .75rem; padding: .85rem .75rem; font-size: 1rem; text-align: left; }
+  .nav-list a i { font-size: 1rem; }
+  .nav-backdrop { display: block; position: fixed; inset: 0; z-index: 50; background: rgba(0, 0, 0, .55); opacity: 0; pointer-events: none; transition: opacity .2s; }
+  body.nav-open .nav-backdrop { opacity: 1; pointer-events: auto; }
+  body.nav-open { overflow: hidden; }
+  .main { padding: var(--space-3); }
+  .page-title { font-size: 1.3rem; }
+  .toasts { left: 1rem; right: 1rem; bottom: 1rem; }
+  .modal-body { overflow-x: auto; }
+}

@@ -1,0 +1,11 @@
+.stat-value{font-size:1.8rem;font-weight:700;color:var(--accent-strong)}
+.stat-label{color:var(--muted);font-size:.85rem}
+.progress{height:10px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin-top:var(--space-2)}
+.progress>div{height:100%;background:var(--accent);transition:width .3s}
+.dash-section{margin-top:var(--space-4)}
+.dash-section h2{font-size:1.05rem;margin-bottom:var(--space-2)}
+.week-chart{width:100%;height:auto;max-height:220px}
+.week-chart text{fill:var(--muted);font-size:11px}
+.list-row{display:flex;justify-content:space-between;gap:var(--space-2);padding:.6rem 0;border-bottom:1px solid var(--border)}
+.list-row:last-child{border-bottom:0}
+.dash-head{display:flex;justify-content:space-between;align-items:flex-start;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-3)}

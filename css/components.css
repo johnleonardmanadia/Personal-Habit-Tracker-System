@@ -1,0 +1,24 @@
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:var(--space-3);box-shadow:var(--shadow)}
+.muted{color:var(--muted)}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 1rem;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);cursor:pointer;transition:background .15s}
+.btn:hover{background:var(--border)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-strong)}
+.btn-danger{background:var(--danger);border-color:var(--danger);color:#fff}
+:focus-visible{outline:2px solid var(--accent-strong);outline-offset:2px}
+.field{display:grid;gap:var(--space-1);margin-bottom:var(--space-3)}
+.field input,.field select,.field textarea{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.6rem .75rem;min-height:44px}
+.empty-state,.error-state,.loading{text-align:center;padding:var(--space-5);color:var(--muted)}
+.error-state{color:var(--danger)}
+.toasts{position:fixed;right:1rem;bottom:1rem;display:grid;gap:.5rem;z-index:50}
+.toast{background:var(--surface-2);border:1px solid var(--border);border-left:4px solid var(--accent);padding:.75rem 1rem;border-radius:8px;box-shadow:var(--shadow)}
+.toast.error{border-left-color:var(--danger)}
+.modal{border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);padding:0;width:min(520px,calc(100vw - 2rem));max-height:calc(100vh - 2rem);overflow:auto}
+.modal::backdrop{background:rgba(0,0,0,.6)}
+.modal-head{display:flex;justify-content:space-between;align-items:center;padding:var(--space-3);border-bottom:1px solid var(--border)}
+.modal-head h2{font-size:1.1rem}
+.modal-body{padding:var(--space-3)}
+.modal-actions{display:flex;gap:var(--space-2);justify-content:flex-end;flex-wrap:wrap}
+.badge{font-size:.75rem;padding:.1rem .5rem;border-radius:99px;background:var(--surface-2);border:1px solid var(--border);color:var(--muted)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.btn i:not(:only-child){margin-right:.45rem}

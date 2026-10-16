@@ -1,0 +1,8 @@
+{
+  "name": "personal-productivity-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local-first productivity tracker. package.json is only used to run the tests with Node's built-in test runner.",
+  "scripts": { "test": "node --test" }
+}
