@@ -1,78 +1,136 @@
-# Focus Tracker — Personal Productivity & Habit Tracker
 
-A local-first app for tracking focus sessions, activities, goals and streaks. Plain HTML, CSS and JavaScript (ES modules). No frameworks, no build step, no paid services, no account, no tracking.
+
+# Focus Tracker
+
+A local-first personal productivity and habit tracker. Plan your day, run focus timers, and watch your consistency grow on a GitHub-style contribution calendar.
+
+Built with plain HTML, CSS and JavaScript (ES modules). No frameworks, no build step, no accounts, no paid services, and no tracking. All data stays in your browser.
+
+## Contents
+
+- [Features](#features)
+- [Quick start](#quick-start)
+- [Project structure](#project-structure)
+- [How the app counts things](#how-the-app-counts-things)
+- [Your data](#your-data)
+- [Install and offline use](#install-and-offline-use)
+- [Publish on GitHub Pages](#publish-on-github-pages)
+- [Tests](#tests)
+- [Troubleshooting](#troubleshooting)
+- [Credits and licenses](#credits-and-licenses)
 
 ## Features
-Dashboard · Activities · Focus timer (survives refresh, with recovery) · Session history · GitHub-style contribution calendar · Statistics · Planner & goals · Settings · JSON/CSV export and JSON import · Optional offline/installable PWA.
 
-## Folder structure
-```
-index.html, manifest.json, service-worker.js, package.json (tests only)
-css/    reset, variables, layout, components, dashboard, activities, timer,
-        contributions, statistics, settings, responsive
-js/     app.js, router.js, database.js, state.js, utils.js
-  components/  navigation, modal, notifications, confirmation
-  modules/     dashboard, activities, timer, sessions, contributions, statistics,
-               goals (planner + goals), settings, export-import, notifications
-  tests/       timer, contributions, statistics, export-import
-assets/icons/  PNG icons      icons/app-icon.svg
-assets/vendor/fontawesome/  self-hosted Font Awesome Free (CSS, font, license)
-```
+| Page | What it does |
+| --- | --- |
+| Dashboard | Today's focus time, sessions, streaks, daily goal, weekly chart, contribution graph |
+| Activities | Create, edit, archive and delete activities with icons, colors and daily targets |
+| Timer | Countdown timer that survives refreshes, with pause, resume, breaks and session recovery |
+| History | Search, filter and review every saved session; log sessions manually |
+| Contributions | Yearly heatmap by focus minutes or session count, with per-day details |
+| Statistics | Totals, trends, top activities, categories and per-activity streaks |
+| Planner | Daily plan with timed items and tasks, plus total, category and activity goals |
+| Settings | Theme, timer defaults, notifications, backup, restore and reset |
 
-## Requirements
-- Windows laptop, Visual Studio Code, and a modern browser (Chrome, Edge, Firefox or Safari).
-- The **Live Server** extension for VS Code (free).
-- Node.js 18+ is needed **only** to run the tests (https://nodejs.org).
+The layout adapts to desktop (sidebar), tablet (compact icon rail) and phone (hamburger menu).
 
-## Run it (Windows + VS Code)
-1. Extract the zip. Open VS Code > **File > Open Folder** > choose the folder that directly contains `index.html`.
-2. Press `Ctrl+Shift+X`, search **Live Server** (by Ritwick Dey), click **Install**.
-3. Right-click `index.html` > **Open with Live Server**. The browser opens `http://127.0.0.1:5500/`.
+## Quick start
 
-> Do **not** double-click `index.html`. Browsers block JavaScript modules on `file://` addresses, so the page would stay empty.
+**Requirements:** a modern browser, Visual Studio Code, and the free **Live Server** extension.
 
-### No Live Server? Use a terminal instead
-In VS Code press `` Ctrl+` `` and run one of:
+1. Extract the zip.
+2. In VS Code choose **File > Open Folder** and pick the folder that directly contains `index.html`.
+3. Install **Live Server** (`Ctrl+Shift+X`, search "Live Server" by Ritwick Dey).
+4. Right-click `index.html` and choose **Open with Live Server**.
+
+The app opens at `http://127.0.0.1:5500/`.
+
+> Do not double-click `index.html`. Browsers block JavaScript modules on `file://` addresses, so the page would stay empty. The app shows a hint if it detects this.
+
+**No Live Server?** Open a terminal in the project folder and run one of:
+
 ```
 py -m http.server 5500
 npx serve .
 ```
+
 Then open `http://localhost:5500`.
 
-## Install as an app (PWA)
-Open the app from a local server in Chrome or Edge and use the install icon in the address bar (or **⋮ > Cast, save and share > Install page as app**). Install support depends on the browser; it is not guaranteed everywhere.
+## Project structure
 
-## Where is my data?
-In your browser's **IndexedDB** for this site's address (for example `127.0.0.1:5500`), plus small preferences in LocalStorage. Important consequences:
-- A different address or port (`localhost:5500` vs `127.0.0.1:5500`, or `:5501`) is a **different, empty** database. Always use the same address.
-- Another browser, profile or device has its own separate data. **Nothing syncs automatically.**
-- Clearing site data, browser cleanup tools or a reinstall can erase it. In Settings you can ask the browser to keep the data (persistent storage), but back up regularly.
+```
+index.html            App shell
+manifest.json         PWA manifest
+service-worker.js     Offline cache (app shell only)
+package.json          Used only to run the tests
 
-## Back up and restore
-**Settings > Your data**
-- **Export backup (JSON)**: activities, sessions, planned items, goals, preferences and schema version.
-- **Export sessions (CSV)**: opens in Excel or Google Sheets.
-- **Import backup…**: the file is validated first, you see a preview, then choose **Merge** (adds only new records) or **Replace** (a safety backup downloads first). Malformed files are rejected without changing anything.
-- **Erase all data…**: you must type `RESET`; a backup button is offered first.
+css/                  Stylesheets (variables, layout, components, one per page)
+js/
+  app.js              Startup
+  router.js           Hash router
+  database.js         IndexedDB wrapper and schema
+  state.js            Shared state and preferences
+  utils.js            Dates, formatting, streaks, icons
+  components/         navigation, modal, notifications, confirmation
+  modules/            dashboard, activities, timer, sessions, contributions,
+                      statistics, goals, settings, export-import, notifications
+  tests/              Automated tests
+assets/icons/         App icons (PNG)
+assets/vendor/        Self-hosted Font Awesome Free
+icons/app-icon.svg    App icon (SVG)
+```
 
-## The focus timer
-- Remaining time is computed from a saved deadline (`Date.now()`), not by counting seconds, so tab switching and throttling do not drift it. Paused time never counts.
-- Active timer state is saved, so a refresh keeps it running.
-- If the app wasn't running for over a minute (laptop sleep, closed browser), nothing is saved automatically. A "Welcome back" card lets you count the time away, skip it (pause where the app last saw it), or discard.
-- **Browser limits:** a web page cannot guarantee an alarm or background execution on every device. Sound plays only if the tab is allowed to run, and system notifications need your permission and may be delayed or dropped by the OS. Keep the tab open during important sessions.
+## How the app counts things
 
-## Rules used for counts and streaks
-- A saved session with status *completed* or *finished early* counts as one contribution. Cancelled sessions are never saved.
-- Heatmap intensity follows daily focus minutes (or session count in that view). All dates use your **local** calendar.
-- A streak is consecutive local days with at least one valid session. If you haven't recorded anything yet *today*, the current streak stays alive until the day ends.
-- Completion rate = sessions that ran their full planned time ÷ all saved sessions.
+- A saved session with status **completed** or **finished early** counts as one contribution. Cancelled sessions are never saved.
+- Heatmap intensity follows daily focus minutes (or session count in that view).
+- All dates use your **local** calendar, so there are no UTC off-by-one-day errors.
+- A **streak** is a run of consecutive days with at least one valid session. If you have not recorded anything yet today, the current streak stays alive until the day ends.
+- **Completion rate** is sessions that ran their full planned time divided by all saved sessions.
 - Ticking a planner task does not create a session, so it never changes focus time, goals or contributions.
 
-## Put it online with GitHub Pages
-All paths are relative, so it works from a repo root (`https://<user>.github.io/<repo>/`) or from a subfolder of an existing repo.
+### The timer
 
-1. Install Git for Windows (https://git-scm.com) and create an empty repository on GitHub.
-2. In VS Code open the terminal (`` Ctrl+` ``) inside this folder and run:
+- Remaining time is calculated from a saved deadline, not by counting seconds, so tab switching and browser throttling do not cause drift. Paused time never counts.
+- The active timer is saved, so refreshing the page keeps it running.
+- If the app was not running for more than a minute (sleep, closed browser), nothing is saved automatically. A "Welcome back" card lets you count the time away, skip it, or discard the session.
+- Browsers cannot guarantee an alarm or background execution. Sound and system notifications only work when the browser allows them, so keep the tab open for important sessions.
+
+## Your data
+
+Data is stored in your browser's **IndexedDB** for the site address you use, plus small preferences in LocalStorage.
+
+- Each address and port is a separate database. `localhost:5500` and `127.0.0.1:5500` do not share data, so always use the same one.
+- Another browser, profile or device has its own separate data. Nothing syncs automatically.
+- Clearing site data or browser cleanup tools can erase it. Back up regularly.
+- Data is not encrypted.
+
+### Backup and restore
+
+Go to **Settings > Your data**.
+
+| Action | Result |
+| --- | --- |
+| Export backup (JSON) | Activities, sessions, plans, goals, preferences and schema version |
+| Export sessions (CSV) | Session history for Excel or Google Sheets |
+| Import backup | Validates the file, shows a preview, then lets you **Merge** (adds new records only) or **Replace** (downloads a safety backup first). Invalid files are rejected without any change |
+| Erase all data | Requires typing `RESET`; offers a backup first |
+
+Do not commit or share backup files; they contain your personal data.
+
+## Install and offline use
+
+In Chrome or Edge, open the app from a local server or from GitHub Pages and use the install icon in the address bar. Install support depends on the browser.
+
+After one successful load, the app shell is cached and opens offline. The service worker is network-first, so updates appear on reload while you are online. It never caches your data. Syncing between devices and background timers while the browser is closed are not supported.
+
+## Publish on GitHub Pages
+
+All paths are relative, so the app works from a repository root or from a subfolder.
+
+1. Install [Git for Windows](https://git-scm.com) and create an empty repository on GitHub.
+2. In the VS Code terminal (`` Ctrl+` ``) inside this folder, run:
+
 ```
 git init
 git add .
@@ -81,33 +139,42 @@ git branch -M main
 git remote add origin https://github.com/<your-username>/<your-repo>.git
 git push -u origin main
 ```
-3. On GitHub: **Settings > Pages > Build and deployment > Deploy from a branch > `main` / `(root)` > Save**. After a minute the site is live. (Pages must be served over HTTPS, which GitHub does for you.)
-4. Adding it to an **existing** repo instead? Copy this folder into it, push, and open `https://<user>.github.io/<repo>/personal-productivity-tracker/`.
-5. After you change files, push again and bump `CACHE_VERSION` in `service-worker.js` so visitors' cached copies refresh.
 
-**Things to know before publishing**
-- Every visitor gets their **own** empty data in **their own** browser. You never see their data and they never see yours.
-- All `*.github.io` pages of one account share one browser *origin*, and IndexedDB is per origin. Other sites under the same account could read this app's data in *your* browser. Put it in a repo with only your own trusted pages, or use a custom domain.
-- A Content-Security-Policy is set in `index.html` (scripts, fonts, images and requests only from the same site, no external services). GitHub Pages cannot send custom HTTP headers, so headers such as `frame-ancestors` cannot be set.
-- Data is not encrypted. Anyone using your device and browser profile can open it.
+3. On GitHub open **Settings > Pages**, choose **Deploy from a branch**, select `main` and `/ (root)`, then save.
+4. The site is live at `https://<your-username>.github.io/<your-repo>/` after a minute. If you copied this folder into an existing repository, add `/personal-productivity-tracker/` to the address.
+5. After changing files, push again and increase `CACHE_VERSION` in `service-worker.js` so visitors' cached copies refresh.
 
-## Icons and licenses
-Icons come from **Font Awesome Free** (v7), self-hosted in `assets/vendor/fontawesome/` so the app works offline and under the CSP. Icons: CC BY 4.0, fonts: SIL OFL 1.1, code: MIT. Keep the `LICENSE.txt` in that folder when you publish.
+**Before you publish**
+
+- Every visitor has their own data in their own browser. You never see theirs and they never see yours.
+- All `*.github.io` pages of one account share a browser origin. Keep other untrusted scripts off the same account, or use a custom domain.
+- Turn on two-factor authentication for your GitHub account. Anyone who gains write access could change the site's code.
+- A Content-Security-Policy is set in `index.html`. GitHub Pages cannot send custom HTTP headers, so some headers (such as `frame-ancestors`) cannot be set.
+- The `.gitignore` excludes backup and export files. Keep it.
 
 ## Tests
-In a terminal opened in the project folder:
+
+Install [Node.js](https://nodejs.org) 18 or newer (only needed for tests), then run in the project folder:
+
 ```
 node --test
 ```
-(or `npm test`). 26 tests cover timer math, recovery, contribution counting, leap years, year/month boundaries, streaks, statistics and backup validation.
 
-## What works offline
-After the first successful load over a local server, the app shell is cached and the app opens offline; your data is local anyway. The service worker is network-first, so your edits appear on reload while online. Nothing about your data is cached by it. Not supported: syncing between devices, background timers while the browser is closed.
+The 26 tests cover timer math and recovery, contribution counting, leap years, year and month boundaries, streaks, statistics and backup validation.
 
 ## Troubleshooting
-- **Blank dark page** > you opened `file://`. Use Live Server (see above); the app shows a hint when it detects this.
-- **"Failed to load module" / 404 in the Console (`F12`)** > open the folder that directly contains `index.html`, and keep the folder structure unchanged.
-- **Old version still showing** > hard reload with `Ctrl+Shift+R`. If needed: `F12` > **Application** > **Service Workers** > *Unregister*, then **Storage > Clear site data** (this also erases app data, so export a backup first). When you edit files for your own changes, bump `CACHE_VERSION` in `service-worker.js`.
-- **"Database unavailable"** > private/incognito windows or strict privacy settings can block IndexedDB. Use a normal window and allow site storage. If a second tab blocks an upgrade, close other tabs and reload.
-- **Data seems missing** > check the address/port is the same as before, then try importing your latest backup.
-- **Notifications don't appear** > allow them in the browser's site settings, then re-enable the toggle in Settings.
+
+| Problem | Fix |
+| --- | --- |
+| Blank dark page | You opened the file by double-clicking. Use Live Server |
+| "Failed to load module" or 404 in the Console (`F12`) | Open the folder that directly contains `index.html` and keep the folder structure unchanged |
+| Old version still showing | Hard reload with `Ctrl+Shift+R`. If needed, `F12` > **Application** > **Service Workers** > Unregister |
+| "Database unavailable" | Private windows or strict privacy settings can block IndexedDB. Use a normal window and allow site storage. Close other tabs of the app and reload |
+| Data seems missing | Check you are using the same address and port as before, then import your latest backup |
+| No notifications | Allow them in the browser's site settings, then switch the option off and on in Settings |
+
+Clearing site data also erases your app data, so export a backup first.
+
+## Credits and licenses
+
+Icons are from [Font Awesome Free](https://fontawesome.com) (icons CC BY 4.0, fonts SIL OFL 1.1, code MIT), self-hosted in `assets/vendor/fontawesome/` so the app works offline. Keep the `LICENSE.txt` in that folder when you publish.
